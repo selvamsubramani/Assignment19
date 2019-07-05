@@ -1,4 +1,5 @@
-﻿using FSE.Assignment19.Dto;
+﻿using FSE.Assignment19.DataConnect;
+using FSE.Assignment19.Dto;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -24,9 +25,25 @@ namespace FSE.Assignment19.Utility
                 return lazy.Value;
             }
         }
-        public DataTable ExecuteTable(string procedurename, params SqlParameter[] parameters)
+
+        public void ExecuteQuery(string query)
         {
-            DataTable table = new DataTable();
+            using (var connection = new SqlConnection(connectionstring))
+            {
+                using (var command = new SqlCommand(query, connection))
+                {
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+
+
+        public CustomerDataSet ExecuteTable(string procedurename, params SqlParameter[] parameters)
+        {
+            CustomerDataSet ds = new CustomerDataSet();
+            //DataTable table = new DataTable();
             using (var connection = new SqlConnection(connectionstring))
             {
                 using (var command = new SqlCommand(procedurename, connection))
@@ -34,13 +51,13 @@ namespace FSE.Assignment19.Utility
                     command.CommandType = CommandType.StoredProcedure;
                     if (parameters != null)
                         command.Parameters.AddRange(parameters);
-                    using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                    using (var adapter = new SqlDataAdapter(command))
                     {
-                        adapter.Fill(table);
+                        adapter.Fill(ds, "Customers");
                     }
                 }
             }
-            return table;
+            return ds;
         }
         public void ExecuteReader(string procedurename, params SqlParameter[] parameters)
         {
@@ -62,14 +79,14 @@ namespace FSE.Assignment19.Utility
             using (var table = ExecuteTable("GetCustomers"))
             {
                 return
-                    table.AsEnumerable().Select(row =>
+                    table.Customers.Select(row =>
                         new Customer
                         {
-                            CustomerId = row.Field<int>("Id"),
-                            CustomerName = row.Field<string>("Name"),
-                            Address = row.Field<string>("Address"),
-                            DOB = row.Field<DateTime>("DOB"),
-                            Salary = row.Field<int>("Salary")
+                            CustomerId = row.Id,
+                            CustomerName = row.Name,
+                            Address = row.Address,
+                            DOB = row.DOB,
+                            Salary = row.Salary
 
                         }).ToList();
             }
@@ -89,18 +106,17 @@ namespace FSE.Assignment19.Utility
             parameters.Add(new SqlParameter("Id", id));
             using (var table = ExecuteTable("GetCustomerById", parameters.ToArray()))
             {
-                if (table.AsEnumerable().Any())
+                if (table.Customers.Any())
                 {
-                    var row = table.AsEnumerable().First();
+                    var row = table.Customers.First();
                     return
                         new Customer
                         {
-                            CustomerId = row.Field<int>("Id"),
-                            CustomerName = row.Field<string>("Name"),
-                            Address = row.Field<string>("Address"),
-                            DOB = row.Field<DateTime>("DOB"),
-                            Salary = row.Field<int>("Salary")
-
+                            CustomerId = row.Id,
+                            CustomerName = row.Name,
+                            Address = row.Address,
+                            DOB = row.DOB,
+                            Salary = row.Salary
                         };
                 }
                 return null;
@@ -130,17 +146,50 @@ namespace FSE.Assignment19.Utility
             using (var table = ExecuteTable("GetCustomerBornAfterDate", parameters.ToArray()))
             {
                 return
-                    table.AsEnumerable().Select(row =>
+                    table.Customers.Select(row =>
                         new Customer
                         {
-                            CustomerId = row.Field<int>("Id"),
-                            CustomerName = row.Field<string>("Name"),
-                            Address = row.Field<string>("Address"),
-                            DOB = row.Field<DateTime>("DOB"),
-                            Salary = row.Field<int>("Salary")
-
-                        }).ToList();
+                            CustomerId = row.Id,
+                            CustomerName = row.Name,
+                            Address = row.Address,
+                            DOB = row.DOB,
+                            Salary = row.Salary
+                        }
+                        ).ToList();
             }
+        }
+
+        public void CreateTableAndAddData(DataTable table, string tablename)
+        {
+            tablename = $"[{tablename}_{Guid.NewGuid()}]";
+            var query = $"CREATE TABLE {tablename} (" +
+                string.Join(", ", table.Columns.Cast<DataColumn>().Select(x => $"{x.ColumnName} {DataType(x.DataType)}")) +
+                $")";
+            ExecuteQuery(query);
+            foreach (DataRow row in table.Rows)
+            {
+
+                query = $"INSERT INTO {tablename} SELECT " +
+                    string.Join(", ", table.Columns.Cast<DataColumn>().Select(x => $"'{row[x.ColumnName]}' [{x.ColumnName}]"));
+                ExecuteQuery(query);
+            }
+        }
+
+        private string DataType(Type type)
+        {
+            if (type == typeof(Int32))
+            {
+                return "INT";
+            }
+            if (type == typeof(string))
+            {
+                return "VARCHAR(MAX)";
+            }
+            if (type == typeof(Boolean))
+            {
+                return "BIT";
+            }
+            return "VARCHAR(MAX)";
         }
     }
 }

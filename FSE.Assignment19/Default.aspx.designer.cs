@@ -13,48 +13,12 @@ namespace FSE.Assignment19 {
     public partial class _Default {
         
         /// <summary>
-        /// addcustomerButton control.
+        /// XmlFile control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button addcustomerButton;
-        
-        /// <summary>
-        /// loadallcustomers control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button loadallcustomers;
-        
-        /// <summary>
-        /// customerid control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox customerid;
-        
-        /// <summary>
-        /// loadcustomer control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button loadcustomer;
-        
-        /// <summary>
-        /// customerGrid control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView customerGrid;
+        protected global::System.Web.UI.HtmlControls.HtmlInputFile XmlFile;
     }
 }

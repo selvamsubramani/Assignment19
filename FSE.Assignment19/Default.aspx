@@ -1,7 +1,26 @@
 ﻿<%@ Page Title="Home Page" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="FSE.Assignment19._Default" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-    <h2>Customers</h2>
+    <h1></h1>
+    <div class="container">
+        <div class="container">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Upload xml file to add into database</h2>
+                </div>
+                <div class="panel-body container">
+                    <div class="form-group form-inline">
+                        <input id="XmlFile" name="xmlfile" runat="server" type="file" class="form-control" accept="text/xml" />
+                        <input type="submit" value="Upload" class="btn btn-primary" runat="server" onserverclick="Upload_ServerClick" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</asp:Content>
+
+
+<%--<h2>Customers</h2><input id="File1" type="file" />
     <hr />
     <table class="table">
         <tr>
@@ -30,5 +49,5 @@
             <asp:CommandField ButtonType="Button" ShowEditButton="True" />
             <asp:CommandField ButtonType="Button" ShowDeleteButton="True" />
         </Columns>
-    </asp:GridView>
-</asp:Content>
+    </asp:GridView>--%>
+
